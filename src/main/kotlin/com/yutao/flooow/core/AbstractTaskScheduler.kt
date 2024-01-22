@@ -1,23 +1,21 @@
 package com.yutao.flooow.core
 
-import com.yutao.flooow.dsl.Task
-
 abstract class AbstractTaskScheduler: AbstractTaskBuilder(), TaskScheduler, TaskDefinitionRegistry {
-    private val taskQueue = mutableListOf<Task>()
+    private val executionTaskQueue = mutableListOf<ExecutionTask>()
 
     override fun schedule() {
         // 添加所有的任务到队列中
-        taskQueue.addAll(getTaskDefinitions().map { it.task })
+        executionTaskQueue.addAll(getTaskDefinitions().map { it.executionTask })
 
-        for (task in taskQueue) {
+        for (task in executionTaskQueue) {
             task.run()
         }
 
         // 销毁
-        taskQueue.clear()
+        executionTaskQueue.clear()
     }
 
-    override fun pushTask2Queue(task: Task) {
-        taskQueue.add(task)
+    override fun pushTask2Queue(executionTask: ExecutionTask) {
+        executionTaskQueue.add(executionTask)
     }
 }

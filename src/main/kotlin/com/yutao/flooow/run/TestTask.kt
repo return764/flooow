@@ -1,8 +1,8 @@
 package com.yutao.flooow.run
 
-import com.yutao.flooow.dsl.Task
+import com.yutao.flooow.core.ExecutionTask
 
-class TestTask: Task {
+class TestTask: ExecutionTask {
     override fun run() {
         println("TestTask Running...")
     }
