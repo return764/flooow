@@ -1,13 +1,19 @@
 package com.yutao.flooow
 
+import com.yutao.flooow.dsl.MainTaskDSL
 import com.yutao.flooow.dsl.TaskDSL
 import kotlin.script.experimental.annotations.KotlinScript
 import kotlin.script.experimental.api.ScriptAcceptedLocation
 import kotlin.script.experimental.api.ScriptCompilationConfiguration
+import kotlin.script.experimental.api.ScriptEvaluationConfiguration
+import kotlin.script.experimental.api.ScriptEvaluationConfigurationRefinementContext
 import kotlin.script.experimental.api.acceptedLocations
+import kotlin.script.experimental.api.asSuccess
 import kotlin.script.experimental.api.defaultImports
 import kotlin.script.experimental.api.ide
 import kotlin.script.experimental.api.refineConfiguration
+import kotlin.script.experimental.api.refineConfigurationBeforeEvaluate
+import kotlin.script.experimental.api.scriptsInstancesSharing
 import kotlin.script.experimental.jvm.dependenciesFromCurrentContext
 import kotlin.script.experimental.jvm.jvm
 
@@ -15,11 +21,12 @@ import kotlin.script.experimental.jvm.jvm
     // File extension for the script type
     fileExtension = "task.kts",
     // Compilation configuration for the script type
-    compilationConfiguration = ScriptWithTaskConfiguration::class
+    compilationConfiguration = ScriptWithTaskCompilationConfiguration::class,
+    evaluationConfiguration = ScriptWithTaskEvaluationConfiguration::class
 )
-abstract class ScriptWithTask(dsl: TaskDSL) : TaskDSL by dsl
+abstract class ScriptWithTask(dsl: MainTaskDSL) : TaskDSL by dsl
 
-object ScriptWithTaskConfiguration : ScriptCompilationConfiguration(
+object ScriptWithTaskCompilationConfiguration : ScriptCompilationConfiguration(
     {
         defaultImports(
             "com.yutao.flooow.dsl.*",
@@ -42,6 +49,6 @@ object ScriptWithTaskConfiguration : ScriptCompilationConfiguration(
     }
 )
 
-//class ScriptIdeDefinitions : ScriptDefinitionsProvider {
-//
-//}
+object ScriptWithTaskEvaluationConfiguration : ScriptEvaluationConfiguration(
+    {}
+)

@@ -1,11 +1,11 @@
 package com.yutao.flooow.core
 
-abstract class AbstractTaskScheduler: AbstractTaskBuilder(), TaskScheduler, TaskDefinitionRegistry {
+abstract class AbstractScriptTaskScheduler : AbstractTaskBuilder(), ScriptTaskScheduler, TaskDefinitionRegistry {
     private val executionTaskQueue = mutableListOf<ExecutionTask>()
 
     override fun schedule() {
-        // 添加所有的任务到队列中
-        executionTaskQueue.addAll(getTaskDefinitions().map { it.executionTask })
+        // TODO 重写调度逻辑
+        executionTaskQueue.addAll(getTaskDefinitions().map { build(it.name) })
 
         for (task in executionTaskQueue) {
             task.run()

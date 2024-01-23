@@ -1,5 +1,5 @@
 package com.yutao.flooow.core
 
-interface TaskScheduler {
+interface ScriptTaskScheduler {
     fun schedule()
 }

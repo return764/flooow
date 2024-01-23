@@ -1,19 +1,23 @@
 package com.yutao.flooow.dsl
 
-import com.yutao.flooow.enums.TaskType
-
-
-interface TaskDSL {
+interface RunnableDSL {
     var name: String
-    val type: TaskType
+
+    fun main(block: () -> Unit)
 }
 
-object task {
-    operator fun invoke(init: Task.() -> Unit): Task {
-        return Task().apply(init)
-    }
+interface TaskDSL: RunnableDSL {
+    fun jobs(name: String): JobDSL
+    fun createJob(jobDSL: JobDSL)
 }
 
-fun runabc(block:() -> Unit) {
-    block()
+fun TaskDSL.job(name: String, configuration: JobDSL.() -> Unit): JobDSL {
+    val job = JobDSL(name = name).apply(configuration)
+    createJob(job)
+    return job
+}
+
+infix fun JobDSL.depend(dsl: JobDSL): JobDSL {
+    this.dependsOn(dsl.name)
+    return dsl
 }

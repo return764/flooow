@@ -11,9 +11,7 @@ import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
 import kotlin.script.experimental.host.toScriptSource
 
 class TaskScriptHost {
-    private
-    val scriptingHost = BasicJvmScriptingHost()
-
+    private val scriptingHost = BasicJvmScriptingHost()
 
     fun eval(
         sourceCodeFile: File,

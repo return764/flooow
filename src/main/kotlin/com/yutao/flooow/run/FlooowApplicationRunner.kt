@@ -1,37 +1,41 @@
 package com.yutao.flooow.run
 
-import com.yutao.flooow.core.DefaultTaskScheduler
-import com.yutao.flooow.core.TaskDefinition
-import com.yutao.flooow.dsl.DefaultTaskDSL
-import com.yutao.flooow.enums.TaskType
-import com.yutao.flooow.host.TaskScriptHost
+import com.yutao.flooow.core.DefaultScriptTaskScheduler
+import com.yutao.flooow.core.coroutine.ApplicationRunnerCoroutineScope
+import com.yutao.flooow.dsl.DslParser
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner
 import org.springframework.stereotype.Component
-import java.nio.file.Paths
 
 
 @Component
-class FlooowApplicationRunner : ApplicationRunner {
-    override fun run(args: ApplicationArguments?) = runBlocking {
-//        val watcher = LocalDirectoryWatcher()
-//        launch { watcher.watch() }
+class FlooowApplicationRunner(
+    val scope: ApplicationRunnerCoroutineScope,
+    val parser: DslParser,
+    val scheduler: DefaultScriptTaskScheduler
+) : ApplicationRunner {
+    override fun run(args: ApplicationArguments?) = runBlocking(scope.coroutineContext) {
+        // 1. start watching folder
+        // 2. response for file change
+        // 3. compile and evaluate new script
 
-        val scriptFile = Paths.get(System.getProperty("user.dir"), "dags", "test.task.kts").toFile()
-
-        val dsl = DefaultTaskDSL(
-            "default name",
-            TaskType.MANUAL
-        )
-        val scriptHost = TaskScriptHost()
-        val eval = scriptHost.eval(scriptFile, dsl)
-        println(dsl.name)
-
-        val task = TestTask()
-        val taskDefinition = TaskDefinition(task)
-        val scheduler = DefaultTaskScheduler()
-        scheduler.registerTaskDefinition("testTask", taskDefinition)
+        // 4. build TaskDefinition from TaskDSL
+        launch {
+            while (true) {
+                val dsl = scope.taskDslChannel.receive()
+                println("start parse DSL")
+                val definition = parser.parse(dsl)
+                scheduler.registerTaskDefinition(definition)
+            }
+        }
+        // 5. run task in the time by scheduler
         scheduler.schedule()
+
+        // 6. collect task result
+
+
+        scope.joinAll()
     }
 }
