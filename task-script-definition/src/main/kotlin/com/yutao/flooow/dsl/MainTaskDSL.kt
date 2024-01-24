@@ -12,6 +12,10 @@ class MainTaskDSL(
         return job
     }
 
+    override fun jobs(): List<JobDSL> {
+        return jobs
+    }
+
     override fun createJob(jobDSL: JobDSL) {
         jobs.add(jobDSL)
     }

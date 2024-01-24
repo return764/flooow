@@ -50,5 +50,6 @@ object ScriptWithTaskCompilationConfiguration : ScriptCompilationConfiguration(
 )
 
 object ScriptWithTaskEvaluationConfiguration : ScriptEvaluationConfiguration(
-    {}
+    {
+    }
 )

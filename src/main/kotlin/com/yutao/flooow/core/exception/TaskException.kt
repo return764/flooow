@@ -1,6 +1,6 @@
 package com.yutao.flooow.core.exception
 
-class TaskException(
+open class TaskException(
     override val message: String
 ): RuntimeException(message) {
 
