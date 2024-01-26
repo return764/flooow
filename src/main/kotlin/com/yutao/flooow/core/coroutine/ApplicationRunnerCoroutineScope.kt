@@ -16,7 +16,7 @@ class ApplicationRunnerCoroutineScope(val scope: CoroutineScope = CoroutineScope
     CoroutineScope by scope {
 
     val jobs: MutableList<Job> = mutableListOf()
-    val taskDslChannel: Channel<MainTaskDSL> = Channel()
+    val taskDslChannel: Channel<TaskDSLWithFile> = Channel()
 
     fun launchAndCache(
         context: CoroutineContext = EmptyCoroutineContext,

@@ -1,8 +1,6 @@
 package com.yutao.flooow.run
 
 import com.yutao.flooow.core.coroutine.ApplicationRunnerCoroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.runBlocking
 import org.springframework.boot.ApplicationArguments
 import org.springframework.boot.ApplicationRunner

@@ -4,18 +4,19 @@ import com.yutao.flooow.core.SubTask
 import com.yutao.flooow.core.TaskChains
 import com.yutao.flooow.core.TaskDefinition
 import com.yutao.flooow.core.TriggerManager
+import com.yutao.flooow.core.coroutine.TaskDSLWithFile
 import com.yutao.flooow.core.exception.TaskValidateException
 import com.yutao.flooow.enums.TaskType
 import org.springframework.stereotype.Component
 
 @Component
 class DslParser {
-    fun parse(dls: MainTaskDSL): TaskDefinition {
-        validate(dls)
+    fun parse(dsl: MainTaskDSL): TaskDefinition {
+        validate(dsl)
         val dag = DirectedAcyclicGraph<String>()
-        dag.addNode(dls.name)
+        dag.addNode(dsl.name)
 
-        dls.jobs.forEach {
+        dsl.jobs.forEach {
             dag.addNode(it.name)
             it.dependsOn.forEach { depend ->
                 dag.addEdge(depend, it.name)
@@ -36,11 +37,11 @@ class DslParser {
 
         val taskChains = TaskChains(mutableListOf(), dag)
         taskChains.tasks.add(SubTask(
-            name = dls.name,
-            runner = dls.main,
+            name = dsl.name,
+            runner = dsl.main,
             chains = taskChains
         ))
-        dls.jobs.forEach {
+        dsl.jobs.forEach {
             SubTask(
                 name = it.name,
                 runner = it.main,
@@ -49,14 +50,14 @@ class DslParser {
         }
 
         // TODO support more type
-        val type = if (dls.triggerDSL.cron == null) TaskType.MANUAL else TaskType.TIMER
+        val type = if (dsl.triggerDSL.cron == null) TaskType.MANUAL else TaskType.TIMER
 
         return TaskDefinition(
-            clazz = dls::class,
-            name = dls.name,
+            clazz = dsl::class,
+            name = dsl.name,
             type = type,
             taskChains = taskChains,
-            triggerManager = TriggerManager(dls.triggerDSL)
+            triggerManager = TriggerManager(dsl.triggerDSL)
         )
     }
 

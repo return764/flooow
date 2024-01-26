@@ -1,6 +1,7 @@
 package com.yutao.flooow.watcher
 
 import com.yutao.flooow.core.coroutine.ApplicationRunnerCoroutineScope
+import com.yutao.flooow.core.coroutine.TaskDSLWithFile
 import com.yutao.flooow.dsl.MainTaskDSL
 import com.yutao.flooow.host.TaskScriptHost
 import com.yutao.flooow.utils.getTaskScriptName
@@ -12,11 +13,12 @@ import kotlin.script.experimental.api.onFailure
 import kotlin.script.experimental.api.onSuccess
 
 @Component
-class KotlinScriptChangeHandler(
+class TaskScriptChangeHandler(
     val scope: ApplicationRunnerCoroutineScope
 ) : AbstractFileChangeHandler(), FileChangeHandler {
     val host: TaskScriptHost = TaskScriptHost()
-    override suspend fun handle(file: File) {
+    override suspend fun handle(file: File, fileChangeType: FileChangeType) {
+        if (file.length() == 0L) return
         val dsl = MainTaskDSL(
             name = file.name.getTaskScriptName()
         )
@@ -32,7 +34,11 @@ class KotlinScriptChangeHandler(
             it.asSuccess()
         }
         // handle result
-        scope.taskDslChannel.send(dsl)
+        scope.taskDslChannel.send(TaskDSLWithFile(
+            dsl,
+            file,
+            fileChangeType
+        ))
     }
 
     override fun acceptProcess(file: File): Boolean {

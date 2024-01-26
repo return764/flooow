@@ -4,7 +4,6 @@ import com.yutao.flooow.core.coroutine.ApplicationRunnerCoroutineScope
 import com.yutao.flooow.core.exception.TaskException
 import com.yutao.flooow.utils.log
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.stereotype.Component
@@ -35,13 +34,14 @@ class LocalDirectoryWatcher(
         }
         val directory = Paths.get(location, dirName)
 
-        directory.toFile().listFiles().forEach { fileChangeHandler.onHandle(it) }
+        directory.toFile().listFiles().forEach { fileChangeHandler.onHandle(it, FileChangeType.CREATED) }
 
         withContext(Dispatchers.IO) {
             directory.register(
                 watchService,
                 StandardWatchEventKinds.ENTRY_CREATE,
-                StandardWatchEventKinds.ENTRY_MODIFY
+                StandardWatchEventKinds.ENTRY_MODIFY,
+                StandardWatchEventKinds.ENTRY_DELETE
             )
         }
         log.info("Started watching scripts directory：${directory.pathString}")
@@ -57,11 +57,15 @@ class LocalDirectoryWatcher(
                     if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
                         val createdFile = directory.resolve(event.context() as Path)
                         println("创建文件：$createdFile")
-                        fileChangeHandler.onHandle(createdFile.toFile())
+                        fileChangeHandler.onHandle(createdFile.toFile(), FileChangeType.CREATED)
                     } else if (kind == StandardWatchEventKinds.ENTRY_MODIFY) {
                         val modifiedFile = directory.resolve(event.context() as Path)
                         println("修改文件：$modifiedFile")
-                        fileChangeHandler.onHandle(modifiedFile.toFile())
+                        fileChangeHandler.onHandle(modifiedFile.toFile(), FileChangeType.MODIFIED)
+                    } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
+                        val deletedFile = directory.resolve(event.context() as Path)
+                        println("删除文件：$deletedFile")
+                        fileChangeHandler.onHandle(deletedFile.toFile(), FileChangeType.DELETED)
                     }
                 }
                 key.reset() // 重置监听器

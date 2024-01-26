@@ -1,4 +1,4 @@
-package com.yutao.flooow.core.scheduler.registry
+package com.yutao.flooow.core.manager.registry
 
 import com.yutao.flooow.core.TaskDefinition
 

@@ -44,6 +44,7 @@ class DirectedAcyclicGraph<Node> {
     // 孤立节点检查
     fun isolatedCheck(): Boolean {
         val first = getFirst() ?: return false
+        if (graph.size == 1) return true
         if (getLasts().intersect(setOf(first)).isNotEmpty()) {
             return false
         }

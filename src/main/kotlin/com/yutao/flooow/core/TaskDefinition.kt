@@ -50,7 +50,7 @@ class SubTask(
     }
 
     fun pending() {
-        require(this.status == TaskRuntimeState.CREATED)
+        require(this.status == TaskRuntimeState.CREATED || this.status == TaskRuntimeState.PENDING)
         this.status = TaskRuntimeState.PENDING
     }
 
@@ -65,7 +65,6 @@ class SubTask(
     }
 
     fun rejected() {
-        require(this.status == TaskRuntimeState.REJECTED)
         this.status = TaskRuntimeState.REJECTED
     }
 
