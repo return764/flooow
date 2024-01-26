@@ -1,15 +1,26 @@
 package com.yutao.flooow.dsl
 
 import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
+
 
 class DirectedAcyclicGraph<Node> {
     private val graph: MutableMap<Node, MutableList<Node>> = mutableMapOf()
-    private val reverseGraph: MutableMap<Node, MutableList<Node>> = mutableMapOf()
+    private val reverseGraph:  MutableMap<Node, MutableList<Node>> = mutableMapOf()
+
+    private fun deepCloneGraph(map: MutableMap<Node, MutableList<Node>>): MutableMap<Node, MutableList<Node>> {
+        val result = HashMap<Node, MutableList<Node>>(map.size)
+        map.entries.forEach {
+            result[it.key] = ArrayList(it.value)
+        }
+        return result
+    }
 
     // 环检查
     fun circleCheck(): Boolean {
-        val tempGraph = HashMap(graph)
-        tailrec fun topoSort(graph: HashMap<Node, MutableList<Node>>): HashMap<Node, MutableList<Node>> {
+        val tempGraph = deepCloneGraph(graph)
+        tailrec fun topoSort(graph: MutableMap<Node, MutableList<Node>>): MutableMap<Node, MutableList<Node>> {
             val foundNodeWithIncomeZero = graph.entries.filter { it.value.isEmpty() }
             if (foundNodeWithIncomeZero.isEmpty()) {
                 return graph
@@ -115,3 +126,4 @@ class DirectedAcyclicGraph<Node> {
     }
 
 }
+

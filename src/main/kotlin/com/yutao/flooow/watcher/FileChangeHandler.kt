@@ -5,5 +5,5 @@ import java.io.File
 interface FileChangeHandler {
     suspend fun handle(file: File)
 
-    fun needProcess(file: File): Boolean
+    fun acceptProcess(file: File): Boolean
 }

@@ -4,7 +4,7 @@ import java.io.File
 
 abstract class AbstractFileChangeHandler: FileChangeHandler {
     suspend fun onHandle(file: File) {
-        if (needProcess(file)) {
+        if (acceptProcess(file)) {
             handle(file)
         }
     }

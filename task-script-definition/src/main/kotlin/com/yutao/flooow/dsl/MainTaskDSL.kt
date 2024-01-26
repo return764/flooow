@@ -6,6 +6,8 @@ class MainTaskDSL(
 ) : TaskDSL {
     var main: () -> Unit = {}
     var jobs: MutableList<JobDSL> = mutableListOf()
+    var triggerDSL = TriggerDSL()
+
     override fun jobs(name: String): JobDSL {
         val job = jobs.find { it.name == name }
         require(job != null)
@@ -14,6 +16,10 @@ class MainTaskDSL(
 
     override fun jobs(): List<JobDSL> {
         return jobs
+    }
+
+    override fun triggerManager(): TriggerDSL {
+        return triggerDSL
     }
 
     override fun createJob(jobDSL: JobDSL) {

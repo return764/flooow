@@ -1,6 +1,9 @@
 package com.yutao.flooow.dsl
 
+import com.yutao.flooow.core.SubTask
+import com.yutao.flooow.core.TaskChains
 import com.yutao.flooow.core.TaskDefinition
+import com.yutao.flooow.core.TriggerManager
 import com.yutao.flooow.core.exception.TaskValidateException
 import com.yutao.flooow.enums.TaskType
 import org.springframework.stereotype.Component
@@ -10,15 +13,13 @@ class DslParser {
     fun parse(dls: MainTaskDSL): TaskDefinition {
         validate(dls)
         val dag = DirectedAcyclicGraph<String>()
+        dag.addNode(dls.name)
 
-        val subTasks = dls.jobs.map {
+        dls.jobs.forEach {
+            dag.addNode(it.name)
             it.dependsOn.forEach { depend ->
                 dag.addEdge(depend, it.name)
             }
-            TaskDefinition.SubTask(
-                name = it.name,
-                runner = it.main
-            )
         }
 
         if (!dag.emptyCheck()) {
@@ -33,14 +34,29 @@ class DslParser {
             throw TaskValidateException("There are circle in task graph, please check the job dependency")
         }
 
+        val taskChains = TaskChains(mutableListOf(), dag)
+        taskChains.tasks.add(SubTask(
+            name = dls.name,
+            runner = dls.main,
+            chains = taskChains
+        ))
+        dls.jobs.forEach {
+            SubTask(
+                name = it.name,
+                runner = it.main,
+                chains = taskChains
+            ).also { taskChains.tasks.add(it) }
+        }
+
+        // TODO support more type
+        val type = if (dls.triggerDSL.cron == null) TaskType.MANUAL else TaskType.TIMER
 
         return TaskDefinition(
             clazz = dls::class,
             name = dls.name,
-            type = TaskType.MANUAL,
-            runner = dls.main,
-            subTasks = subTasks,
-            dag = dag
+            type = type,
+            taskChains = taskChains,
+            triggerManager = TriggerManager(dls.triggerDSL)
         )
     }
 

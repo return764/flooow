@@ -18,7 +18,7 @@ import kotlin.io.path.pathString
 @Component
 class LocalDirectoryWatcher(
     val fileChangeHandler: AbstractFileChangeHandler,
-    val applicationRunnerCoroutineScope: ApplicationRunnerCoroutineScope
+    val scope: ApplicationRunnerCoroutineScope
 ) : Watcher, InitializingBean {
     private val location: String = System.getProperty("user.dir")
     private val dirName = "dags"
@@ -45,7 +45,7 @@ class LocalDirectoryWatcher(
             )
         }
         log.info("Started watching scripts directory：${directory.pathString}")
-        applicationRunnerCoroutineScope.launchAndCache {
+        scope.launchAndCache {
             while (true) {
                 val key = withContext(Dispatchers.IO) {
                     watchService.take()
@@ -78,7 +78,7 @@ class LocalDirectoryWatcher(
     }
 
     override fun afterPropertiesSet() {
-        applicationRunnerCoroutineScope.launch {
+        scope.launchAndCache {
             startWatch()
         }
     }

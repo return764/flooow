@@ -9,6 +9,7 @@ interface RunnableDSL {
 interface TaskDSL : RunnableDSL {
     fun jobs(name: String): JobDSL
     fun jobs(): List<JobDSL>
+    fun triggerManager(): TriggerDSL
     fun createJob(jobDSL: JobDSL)
 }
 
@@ -19,6 +20,11 @@ fun TaskDSL.job(name: String, configuration: JobDSL.() -> Unit): JobDSL {
     ).apply(configuration)
     createJob(job)
     return job
+}
+
+fun TaskDSL.trigger(configuration: TriggerDSL.() -> Unit): TaskDSL {
+    triggerManager().apply(configuration)
+    return this
 }
 
 infix fun JobDSL.depend(dsl: JobDSL): JobDSL {

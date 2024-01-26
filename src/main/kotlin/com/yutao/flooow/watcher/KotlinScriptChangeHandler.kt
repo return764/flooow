@@ -35,7 +35,7 @@ class KotlinScriptChangeHandler(
         scope.taskDslChannel.send(dsl)
     }
 
-    override fun needProcess(file: File): Boolean {
+    override fun acceptProcess(file: File): Boolean {
         return file.name.isTaskScriptFile()
     }
 
