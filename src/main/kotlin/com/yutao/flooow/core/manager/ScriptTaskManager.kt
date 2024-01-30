@@ -4,6 +4,7 @@ import com.yutao.flooow.core.SimpleTaskDefinitionRegistry
 import com.yutao.flooow.core.TaskDefinition
 import com.yutao.flooow.core.coroutine.ApplicationRunnerCoroutineScope
 import com.yutao.flooow.core.exception.TaskException
+import com.yutao.flooow.core.manager.scheduler.ApiTaskScheduler
 import com.yutao.flooow.core.manager.scheduler.TimerTaskScheduler
 import com.yutao.flooow.dsl.DslParser
 import com.yutao.flooow.enums.TaskType
@@ -18,31 +19,45 @@ import org.springframework.stereotype.Component
 @Component
 class ScriptTaskManager(
     val timerTaskScheduler: TimerTaskScheduler,
+    val apiTaskScheduler: ApiTaskScheduler,
     val scope: ApplicationRunnerCoroutineScope,
     val parser: DslParser,
     val registry: SimpleTaskDefinitionRegistry
 ): AbstractTaskBuilder(), InitializingBean {
 
     fun registerAndSchedule(definition: TaskDefinition) {
+        log.info("Schedule task [${definition.identify.fileName}]")
+        registry.registerTaskDefinition(definition)
+        schedule(build(definition))
+    }
+
+    fun registerAndUpdate(definition: TaskDefinition) {
+        log.info("Update task [${definition.identify.fileName}]")
         registry.registerTaskDefinition(definition)
         schedule(build(definition))
     }
 
     fun removeAndCancelTask(definition: TaskDefinition) {
-        registry.unRegisterTaskDefinition(definition.name)
+        log.info("Remove task [${definition.identify.fileName}]")
+        registry.unRegisterTaskDefinition(definition.identify)
         cancel(build(definition))
     }
 
     fun cancel(task: ExecutableTask) {
         if (task.type === TaskType.TIMER) {
             timerTaskScheduler.cancel(task)
+        }else if (task.type === TaskType.API) {
+            apiTaskScheduler.cancel(task)
         }
     }
 
+
+
     fun schedule(task: ExecutableTask) {
         if (task.type === TaskType.TIMER) {
-            timerTaskScheduler.cancel(task)
             timerTaskScheduler.schedule(task)
+        } else if (task.type === TaskType.API) {
+            apiTaskScheduler.schedule(task)
         }
     }
 
@@ -52,7 +67,7 @@ class ScriptTaskManager(
                 val dsl = scope.taskDslChannel.receive()
                 var definition: TaskDefinition? = null
                 val parseResult = runCatching {
-                    definition = parser.parse(dsl.mainTaskDSL)
+                    definition = parser.parse(dsl)
                 }
                 if (parseResult.isFailure) {
                     parseResult.onFailure { log.error("Parse task Error: ${it.message}") }
@@ -68,7 +83,7 @@ class ScriptTaskManager(
                     // 更新definition
                     // 重新build task from definition
                     // 移除之前的任务，重新创建新的任务
-                    registerAndSchedule(definition!!)
+                    registerAndUpdate(definition!!)
                 } else if (dsl.fileChangeType == FileChangeType.DELETED) {
                     // 移除definition
                     // 根据type和name移除任务

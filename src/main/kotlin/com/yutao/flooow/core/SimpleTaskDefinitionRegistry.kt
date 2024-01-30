@@ -5,21 +5,21 @@ import org.springframework.stereotype.Component
 
 @Component
 open class SimpleTaskDefinitionRegistry: TaskDefinitionRegistry {
-    private val map = mutableMapOf<String, TaskDefinition>()
+    private val map = mutableMapOf<TaskIdentifier, TaskDefinition>()
 
-    override fun registerTaskDefinition(name: String, definition: TaskDefinition) {
+    override fun registerTaskDefinition(name: TaskIdentifier, definition: TaskDefinition) {
         map[name] = definition
     }
 
-    override fun unRegisterTaskDefinition(name: String) {
+    override fun unRegisterTaskDefinition(name: TaskIdentifier) {
         map.remove(name)
     }
 
     fun registerTaskDefinition(definition: TaskDefinition) {
-        registerTaskDefinition(definition.name, definition)
+        registerTaskDefinition(definition.identify, definition)
     }
 
-    override fun getTaskDefinition(name: String): TaskDefinition {
+    override fun getTaskDefinition(name: TaskIdentifier): TaskDefinition {
         return map[name] ?: throw TaskException("Task not define in system.")
     }
 

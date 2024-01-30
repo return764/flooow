@@ -1,5 +1,6 @@
 package com.yutao.flooow.core.manager.scheduler
 
+import com.yutao.flooow.core.TaskIdentifier
 import com.yutao.flooow.core.manager.ExecutableTask
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
 import org.springframework.stereotype.Component
@@ -12,14 +13,14 @@ class TimerTaskScheduler(
     val scheduledFutures = mutableMapOf<String, ScheduledFuture<*>>()
 
     fun cancel(task: ExecutableTask) {
-        scheduledFutures[task.name]?.also {
+        scheduledFutures[task.identify.fileName]?.also {
             it.cancel(true)
         }
     }
 
-    fun schedule(task: ExecutableTask): ScheduledFuture<*>? {
+    fun schedule(task: ExecutableTask) {
+        cancel(task)
         val feature = taskScheduler.schedule(task, task.triggerManager.getTrigger())
-        scheduledFutures.put(task.name, feature!!)
-        return feature
+        scheduledFutures.put(task.identify.fileName, feature!!)
     }
 }

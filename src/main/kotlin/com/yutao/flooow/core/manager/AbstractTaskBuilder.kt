@@ -11,7 +11,7 @@ abstract class AbstractTaskBuilder : TaskBuilder {
             type = taskDefinition.type,
             triggerManager = taskDefinition.triggerManager,
             taskChains = taskDefinition.taskChains,
-            name = taskDefinition.name
+            identify = taskDefinition.identify
         )
         // 构建任务
         return executableTask

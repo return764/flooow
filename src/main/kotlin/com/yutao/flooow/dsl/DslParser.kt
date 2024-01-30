@@ -3,6 +3,7 @@ package com.yutao.flooow.dsl
 import com.yutao.flooow.core.SubTask
 import com.yutao.flooow.core.TaskChains
 import com.yutao.flooow.core.TaskDefinition
+import com.yutao.flooow.core.TaskIdentifier
 import com.yutao.flooow.core.TriggerManager
 import com.yutao.flooow.core.coroutine.TaskDSLWithFile
 import com.yutao.flooow.core.exception.TaskValidateException
@@ -11,12 +12,13 @@ import org.springframework.stereotype.Component
 
 @Component
 class DslParser {
-    fun parse(dsl: MainTaskDSL): TaskDefinition {
-        validate(dsl)
+    fun parse(dsl: TaskDSLWithFile): TaskDefinition {
+        val mainTaskDSL = dsl.mainTaskDSL
+        validate(mainTaskDSL)
         val dag = DirectedAcyclicGraph<String>()
-        dag.addNode(dsl.name)
+        dag.addNode(mainTaskDSL.name)
 
-        dsl.jobs.forEach {
+        mainTaskDSL.jobs.forEach {
             dag.addNode(it.name)
             it.dependsOn.forEach { depend ->
                 dag.addEdge(depend, it.name)
@@ -37,11 +39,11 @@ class DslParser {
 
         val taskChains = TaskChains(mutableListOf(), dag)
         taskChains.tasks.add(SubTask(
-            name = dsl.name,
-            runner = dsl.main,
+            name = mainTaskDSL.name,
+            runner = mainTaskDSL.main,
             chains = taskChains
         ))
-        dsl.jobs.forEach {
+        mainTaskDSL.jobs.forEach {
             SubTask(
                 name = it.name,
                 runner = it.main,
@@ -50,14 +52,20 @@ class DslParser {
         }
 
         // TODO support more type
-        val type = if (dsl.triggerDSL.cron == null) TaskType.MANUAL else TaskType.TIMER
+        val type = if (mainTaskDSL.triggerDSL.cron != null) {
+            TaskType.TIMER
+        } else if (mainTaskDSL.triggerDSL.api) {
+            TaskType.API
+        } else {
+            TaskType.MANUAL
+        }
 
         return TaskDefinition(
-            clazz = dsl::class,
-            name = dsl.name,
+            clazz = mainTaskDSL::class,
+            identify = TaskIdentifier(mainTaskDSL.name, dsl.file.name),
             type = type,
             taskChains = taskChains,
-            triggerManager = TriggerManager(dsl.triggerDSL)
+            triggerManager = TriggerManager(mainTaskDSL.triggerDSL)
         )
     }
 

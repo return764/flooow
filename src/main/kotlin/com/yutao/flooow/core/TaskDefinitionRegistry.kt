@@ -1,7 +1,7 @@
 package com.yutao.flooow.core
 
 interface TaskDefinitionRegistry {
-    fun registerTaskDefinition(name: String, definition: TaskDefinition)
-    fun unRegisterTaskDefinition(name: String)
-    fun getTaskDefinition(name: String): TaskDefinition
+    fun registerTaskDefinition(name: TaskIdentifier, definition: TaskDefinition)
+    fun unRegisterTaskDefinition(name: TaskIdentifier)
+    fun getTaskDefinition(name: TaskIdentifier): TaskDefinition
 }

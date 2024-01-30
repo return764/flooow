@@ -11,7 +11,7 @@ import kotlin.reflect.KClass
 class TaskDefinition(
     val clazz: KClass<*>,
     val type: TaskType,
-    val name: String,
+    val identify: TaskIdentifier,
     val taskChains: TaskChains,
     val triggerManager: TriggerManager
 ) {
