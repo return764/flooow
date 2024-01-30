@@ -1,6 +1,6 @@
 package com.yutao.flooow.core.coroutine
 
-import com.yutao.flooow.dsl.MainTaskDSL
+import com.yutao.flooow.core.model.TaskDSLWithFile
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart

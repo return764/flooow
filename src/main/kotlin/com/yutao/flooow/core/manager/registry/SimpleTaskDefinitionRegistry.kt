@@ -1,6 +1,8 @@
-package com.yutao.flooow.core
+package com.yutao.flooow.core.manager.registry
 
 import com.yutao.flooow.core.exception.TaskException
+import com.yutao.flooow.core.model.TaskDefinition
+import com.yutao.flooow.core.model.TaskIdentifier
 import org.springframework.stereotype.Component
 
 @Component

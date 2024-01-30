@@ -1,11 +1,5 @@
-package com.yutao.flooow.core.manager
+package com.yutao.flooow.core.model
 
-import com.yutao.flooow.core.SubTask
-import com.yutao.flooow.core.TaskChains
-import com.yutao.flooow.core.TaskRuntimeState
-import com.yutao.flooow.core.Repeatable
-import com.yutao.flooow.core.TaskIdentifier
-import com.yutao.flooow.core.TriggerManager
 import com.yutao.flooow.enums.TaskType
 
 class ExecutableTask(

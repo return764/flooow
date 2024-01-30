@@ -1,4 +1,4 @@
-package com.yutao.flooow.core.coroutine
+package com.yutao.flooow.core.model
 
 import com.yutao.flooow.dsl.MainTaskDSL
 import com.yutao.flooow.watcher.FileChangeType

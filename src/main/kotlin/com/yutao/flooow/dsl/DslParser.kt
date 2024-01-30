@@ -1,11 +1,11 @@
 package com.yutao.flooow.dsl
 
-import com.yutao.flooow.core.SubTask
-import com.yutao.flooow.core.TaskChains
-import com.yutao.flooow.core.TaskDefinition
-import com.yutao.flooow.core.TaskIdentifier
-import com.yutao.flooow.core.TriggerManager
-import com.yutao.flooow.core.coroutine.TaskDSLWithFile
+import com.yutao.flooow.core.model.SubTask
+import com.yutao.flooow.core.model.TaskChains
+import com.yutao.flooow.core.model.TaskDefinition
+import com.yutao.flooow.core.model.TaskIdentifier
+import com.yutao.flooow.core.model.TriggerManager
+import com.yutao.flooow.core.model.TaskDSLWithFile
 import com.yutao.flooow.core.exception.TaskValidateException
 import com.yutao.flooow.enums.TaskType
 import org.springframework.stereotype.Component
@@ -38,11 +38,13 @@ class DslParser {
         }
 
         val taskChains = TaskChains(mutableListOf(), dag)
-        taskChains.tasks.add(SubTask(
+        taskChains.tasks.add(
+            SubTask(
             name = mainTaskDSL.name,
             runner = mainTaskDSL.main,
             chains = taskChains
-        ))
+        )
+        )
         mainTaskDSL.jobs.forEach {
             SubTask(
                 name = it.name,

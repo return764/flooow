@@ -1,4 +1,7 @@
-package com.yutao.flooow.core
+package com.yutao.flooow.core.manager.registry
+
+import com.yutao.flooow.core.model.TaskDefinition
+import com.yutao.flooow.core.model.TaskIdentifier
 
 interface TaskDefinitionRegistry {
     fun registerTaskDefinition(name: TaskIdentifier, definition: TaskDefinition)

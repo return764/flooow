@@ -1,24 +1,6 @@
-package com.yutao.flooow.core
+package com.yutao.flooow.core.model
 
-import com.yutao.flooow.dsl.DirectedAcyclicGraph
-import com.yutao.flooow.dsl.TriggerDSL
-import com.yutao.flooow.enums.TaskType
 import com.yutao.flooow.utils.log
-import org.springframework.scheduling.Trigger
-import org.springframework.scheduling.support.CronTrigger
-import kotlin.reflect.KClass
-
-class TaskDefinition(
-    val clazz: KClass<*>,
-    val type: TaskType,
-    val identify: TaskIdentifier,
-    val taskChains: TaskChains,
-    val triggerManager: TriggerManager
-) {
-
-
-}
-
 
 class SubTask(
     val name: String,
@@ -70,32 +52,5 @@ class SubTask(
 
     override fun reset() {
         this.status = TaskRuntimeState.CREATED
-    }
-}
-
-class TaskChains(
-    val tasks: MutableList<SubTask>,
-    val dag: DirectedAcyclicGraph<String>
-) {
-
-    fun getMainTask(): SubTask {
-        return tasks.find { it.name == dag.getFirst()!! }!!
-    }
-
-    fun getTaskByName(name: String): SubTask {
-        return tasks.find { it.name == name }!!
-    }
-
-    fun waitingExecute(): List<SubTask> {
-        return tasks.filter { it.status == TaskRuntimeState.PENDING }
-    }
-}
-
-class TriggerManager(
-    val triggerDSL: TriggerDSL
-) {
-    fun getTrigger(): Trigger {
-        // TODO support more trigger
-        return CronTrigger(triggerDSL.cron!!)
     }
 }

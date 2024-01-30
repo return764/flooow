@@ -1,6 +1,6 @@
 package com.yutao.flooow.core.manager.scheduler
 
-import com.yutao.flooow.core.manager.ExecutableTask
+import com.yutao.flooow.core.model.ExecutableTask
 import com.yutao.flooow.enums.TaskType
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler
 import org.springframework.stereotype.Component

@@ -1,7 +1,7 @@
 package com.yutao.flooow.watcher
 
 import com.yutao.flooow.core.coroutine.ApplicationRunnerCoroutineScope
-import com.yutao.flooow.core.coroutine.TaskDSLWithFile
+import com.yutao.flooow.core.model.TaskDSLWithFile
 import com.yutao.flooow.dsl.MainTaskDSL
 import com.yutao.flooow.host.TaskScriptHost
 import com.yutao.flooow.utils.getTaskScriptName
@@ -34,11 +34,13 @@ class TaskScriptChangeHandler(
             it.asSuccess()
         }
         // handle result
-        scope.taskDslChannel.send(TaskDSLWithFile(
+        scope.taskDslChannel.send(
+            TaskDSLWithFile(
             dsl,
             file,
             fileChangeType
-        ))
+        )
+        )
     }
 
     override fun acceptProcess(file: File): Boolean {

@@ -1,9 +1,10 @@
 package com.yutao.flooow.core.manager
 
-import com.yutao.flooow.core.SimpleTaskDefinitionRegistry
-import com.yutao.flooow.core.TaskDefinition
+import com.yutao.flooow.core.manager.registry.SimpleTaskDefinitionRegistry
+import com.yutao.flooow.core.model.TaskDefinition
 import com.yutao.flooow.core.coroutine.ApplicationRunnerCoroutineScope
 import com.yutao.flooow.core.manager.scheduler.ComposeTaskSchedulers
+import com.yutao.flooow.core.model.ExecutableTask
 import com.yutao.flooow.dsl.DslParser
 import com.yutao.flooow.utils.log
 import com.yutao.flooow.watcher.FileChangeType

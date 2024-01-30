@@ -1,4 +1,4 @@
-package com.yutao.flooow.core
+package com.yutao.flooow.core.model
 
 class TaskIdentifier(
     val name: String,

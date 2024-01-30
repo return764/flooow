@@ -1,7 +1,7 @@
 package com.yutao.flooow.core.manager.scheduler
 
 import com.yutao.flooow.core.exception.TaskException
-import com.yutao.flooow.core.manager.ExecutableTask
+import com.yutao.flooow.core.model.ExecutableTask
 import com.yutao.flooow.enums.TaskType
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
