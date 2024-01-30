@@ -56,15 +56,15 @@ class LocalDirectoryWatcher(
                     // 处理文件事件
                     if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
                         val createdFile = directory.resolve(event.context() as Path)
-                        println("创建文件：$createdFile")
+                        log.info("Create file：$createdFile")
                         fileChangeHandler.onHandle(createdFile.toFile(), FileChangeType.CREATED)
                     } else if (kind == StandardWatchEventKinds.ENTRY_MODIFY) {
                         val modifiedFile = directory.resolve(event.context() as Path)
-                        println("修改文件：$modifiedFile")
+                        log.info("Modify file：$modifiedFile")
                         fileChangeHandler.onHandle(modifiedFile.toFile(), FileChangeType.MODIFIED)
                     } else if (kind == StandardWatchEventKinds.ENTRY_DELETE) {
                         val deletedFile = directory.resolve(event.context() as Path)
-                        println("删除文件：$deletedFile")
+                        log.info("Delete file：$deletedFile")
                         fileChangeHandler.onHandle(deletedFile.toFile(), FileChangeType.DELETED)
                     }
                 }
