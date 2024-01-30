@@ -3,23 +3,17 @@ package com.yutao.flooow.core.manager
 import com.yutao.flooow.core.SimpleTaskDefinitionRegistry
 import com.yutao.flooow.core.TaskDefinition
 import com.yutao.flooow.core.coroutine.ApplicationRunnerCoroutineScope
-import com.yutao.flooow.core.exception.TaskException
-import com.yutao.flooow.core.manager.scheduler.ApiTaskScheduler
-import com.yutao.flooow.core.manager.scheduler.TimerTaskScheduler
+import com.yutao.flooow.core.manager.scheduler.ComposeTaskSchedulers
 import com.yutao.flooow.dsl.DslParser
-import com.yutao.flooow.enums.TaskType
 import com.yutao.flooow.utils.log
 import com.yutao.flooow.watcher.FileChangeType
 import org.springframework.beans.factory.InitializingBean
-import org.springframework.context.ApplicationContext
-import org.springframework.context.ApplicationContextAware
 import org.springframework.stereotype.Component
 
 
 @Component
 class ScriptTaskManager(
-    val timerTaskScheduler: TimerTaskScheduler,
-    val apiTaskScheduler: ApiTaskScheduler,
+    val composeTaskSchedulers: ComposeTaskSchedulers,
     val scope: ApplicationRunnerCoroutineScope,
     val parser: DslParser,
     val registry: SimpleTaskDefinitionRegistry
@@ -28,35 +22,19 @@ class ScriptTaskManager(
     fun registerAndSchedule(definition: TaskDefinition) {
         log.info("Schedule task [${definition.identify.fileName}]")
         registry.registerTaskDefinition(definition)
-        schedule(build(definition))
+        composeTaskSchedulers.schedule(build(definition))
     }
 
     fun registerAndUpdate(definition: TaskDefinition) {
         log.info("Update task [${definition.identify.fileName}]")
         registry.registerTaskDefinition(definition)
-        schedule(build(definition))
+        composeTaskSchedulers.schedule(build(definition))
     }
 
     fun removeAndCancelTask(definition: TaskDefinition) {
         log.info("Remove task [${definition.identify.fileName}]")
         registry.unRegisterTaskDefinition(definition.identify)
-        cancel(build(definition))
-    }
-
-    fun cancel(task: ExecutableTask) {
-        if (task.type === TaskType.TIMER) {
-            timerTaskScheduler.cancel(task)
-        }else if (task.type === TaskType.API) {
-            apiTaskScheduler.cancel(task)
-        }
-    }
-
-    fun schedule(task: ExecutableTask) {
-        if (task.type === TaskType.TIMER) {
-            timerTaskScheduler.schedule(task)
-        } else if (task.type === TaskType.API) {
-            apiTaskScheduler.schedule(task)
-        }
+        composeTaskSchedulers.cancel(build(definition))
     }
 
     fun build(taskDefinition: TaskDefinition): ExecutableTask {

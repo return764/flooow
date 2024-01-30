@@ -2,6 +2,7 @@ package com.yutao.flooow.core.manager.scheduler
 
 import com.yutao.flooow.core.exception.TaskException
 import com.yutao.flooow.core.manager.ExecutableTask
+import com.yutao.flooow.enums.TaskType
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.stereotype.Component
@@ -12,20 +13,19 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 @Component
 class ApiTaskScheduler(
     val apiRegister: RequestMappingHandlerMapping
-) {
+): TaskScheduler {
     private val prefix = "/graph"
     val requestMappings = mutableMapOf<String, RequestMappingInfo>()
 
-    fun cancel(task: ExecutableTask) {
+    override fun cancel(task: ExecutableTask) {
         requestMappings[task.identify.fileName]?.let { apiRegister.unregisterMapping(it) }
     }
 
-    fun refresh(task: ExecutableTask) {
-
+    override fun support(): TaskType {
+        return TaskType.API
     }
 
-    fun schedule(task: ExecutableTask) {
-        cancel(task)
+    override fun schedule(task: ExecutableTask) {
         val requestMappingInfo = RequestMappingInfo
             .paths("$prefix/${task.identify.name}")
             .methods(RequestMethod.POST)
