@@ -23,7 +23,7 @@ class ScriptTaskManager(
     val scope: ApplicationRunnerCoroutineScope,
     val parser: DslParser,
     val registry: SimpleTaskDefinitionRegistry
-): AbstractTaskBuilder(), InitializingBean {
+): InitializingBean {
 
     fun registerAndSchedule(definition: TaskDefinition) {
         log.info("Schedule task [${definition.identify.fileName}]")
@@ -51,14 +51,21 @@ class ScriptTaskManager(
         }
     }
 
-
-
     fun schedule(task: ExecutableTask) {
         if (task.type === TaskType.TIMER) {
             timerTaskScheduler.schedule(task)
         } else if (task.type === TaskType.API) {
             apiTaskScheduler.schedule(task)
         }
+    }
+
+    fun build(taskDefinition: TaskDefinition): ExecutableTask {
+        return ExecutableTask(
+            type = taskDefinition.type,
+            triggerManager = taskDefinition.triggerManager,
+            taskChains = taskDefinition.taskChains,
+            identify = taskDefinition.identify
+        )
     }
 
     override fun afterPropertiesSet() {
